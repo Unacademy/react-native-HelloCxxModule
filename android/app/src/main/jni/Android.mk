@@ -11,6 +11,8 @@ LOCAL_MODULE := rnpackage-hellocxx
 LOCAL_SRC_FILES := \
   HelloCxxModule.cpp \
 
+
+
 LOCAL_C_INCLUDES := $(RN_DIR)/ReactCommon
 LOCAL_C_INCLUDES += $(RN_DIR)/ReactAndroid/src/main/jni/react/jni
 LOCAL_C_INCLUDES += $(RN_DIR)/ReactAndroid/src/main/jni/first-party/fb/include
@@ -21,9 +23,15 @@ LOCAL_C_INCLUDES += $(RN_BUILD_THIRD_PARTY_DIR)/double-conversion
 
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_C_INCLUDES)
 
-LOCAL_SHARED_LIBRARIES := libfolly libfb libreactnative
+LOCAL_LDLIBS := -lz
+
+LOCAL_SHARED_LIBRARIES := libfolly libfb libreactnative libglog
+
 
 include $(BUILD_SHARED_LIBRARY)
+
+
+USE_GLOG=0
 
 BASE_DIR := $(LOCAL_PATH)
 include $(BASE_DIR)/SoWrapper.mk

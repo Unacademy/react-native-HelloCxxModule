@@ -9,6 +9,8 @@ class HelloCxxModule : public facebook::xplat::module::CxxModule {
 
   std::string getName() override;
 
+  std::string gzipUncompress(const std::string&);
+
   auto getConstants() -> std::map<std::string, folly::dynamic> override;
 
   auto getMethods() -> std::vector<Method> override;

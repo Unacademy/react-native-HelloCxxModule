@@ -15,6 +15,7 @@ import {
   Text,
   StatusBar,
   NativeModules,
+  Button
 } from 'react-native';
 
 import {
@@ -36,8 +37,77 @@ const spyFunction = msg => {
 MessageQueue.spy(spyFunction);
 
 const App = () => {
-  NativeModules.HelloCxxModule.foo(r => console.log('foo r', r));
-  NativeModules.HelloCxxModule.bar();
+  
+  submit = (uri) => {
+    //NativeModules.HelloCxxModule.foo(r => console.log('foo r', r));
+    //NativeModules.HelloCxxModule.bar();
+    this.time = Date.now();
+    console.log("--LoadinTime--EventsStart", Date.now())
+    const headers = {  
+      method: 'GET',
+      headers: {
+        'Accept-Encoding': 'identity',
+      }
+    };
+    fetch(uri)
+    .then((response) => response.json())
+    .then((response) => {
+      console.log("--LoadinTime--EventsStartJSONcompleteFetch", Date.now() - this.time)
+      console.log("--LoadinTime--EventsStartJSONcompleteFetchResponse", response[0][0])
+      //this.parseEventsResponse(response)
+      //console.log("--LoadinTime--EventsStartParsedJson", Date.now() - this.time)
+      //this.time = Date.now()
+    }).catch((error) => {
+    })
+  }
+
+  parseEventsResponse = (response) => {
+
+  }
+
+  submitNative = (uri) => {
+    //NativeModules.HelloCxxModule.foo(r => console.log('foo r', r));
+    //NativeModules.HelloCxxModule.bar();
+    this.time = Date.now();
+    console.log("--LoadinTime--EventsStart", Date.now())
+    NativeModules.Activity.getEventsData(uri, (response) => {
+      console.log("--LoadinTime--EventsStartresponse", response)
+      this.parseEventsResponse(response)
+      console.log("--LoadinTime--EventsStartJSONcompleteNative", Date.now() - this.time)
+      //this.parseEventsResponse(newResponse)
+    });
+  }
+
+  fetchData = (uri) => {
+    this.time = Date.now();
+    console.log("--LoadinTime--EventsStart", Date.now())
+    var XHR = new XMLHttpRequest();
+    XHR.open('GET', uri, true);
+    //XHR.responseType = "arraybuffer";
+    XHR.setRequestHeader("Accept-Encoding", "gzip")
+    XHR.onloadend =  () => {
+      let arb = XHR.response;
+      console.log("--LoadinTime--EventsStartresponse", arb)
+      console.log("--LoadinTime--EventsStartJSONcompleteXHR", Date.now() - this.time)
+      //const base64 = atob(arb);
+          let a = new Uint8Array(arb);
+          var CHUNK_SZ = 0x8000;
+          var c = [];
+          for (var i=0; i < a.length; i+=CHUNK_SZ) {
+            c.push(String.fromCharCode.apply(null, a.subarray(i, i+CHUNK_SZ)));
+          }
+          // let bas64 = btoa(c.join(""));
+          // let strData  = atob(bas64);
+          // this.time = Date.now();
+      NativeModules.HelloCxxModule.gzipUncompress("fdjhg", r => {
+        console.log('--LoadinTimeUncompressed', r.length);
+        console.log('--LoadinTimeUncompressedTime', Date.now() - this.time);
+      });
+      //this.parseEventsResponse(JSON.parse(this.utftoarray(data)));
+    };
+    XHR.send(null)
+  }
+
   return (
     <Fragment>
       <StatusBar barStyle="dark-content" />
@@ -52,6 +122,19 @@ const App = () => {
             </View>
           )}
           <View style={styles.body}>
+            <Button
+              title="Press me"
+              onPress={() => this.submit("https://player.uacdn.net/lesson-raw/BVVQYYKEZIMW454HT145/data.json")}
+            />
+
+            <Button
+              title="Press me Native call"
+              onPress={() => this.submitNative("https://player.uacdn.net/lesson-raw/BVVQYYKEZIMW454HT145/data.json")}
+            />
+            <Button
+              title="Press me XHR call"
+              onPress={() => this.fetchData("https://player.uacdn.net/lesson-raw/BVVQYYKEZIMW454HT145/data.json")}
+            />
             <View style={styles.sectionContainer}>
               <Text style={styles.sectionTitle}>Step One</Text>
               <Text style={styles.sectionDescription}>
